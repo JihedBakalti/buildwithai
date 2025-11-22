@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <main class="main-content">
+        <div style="margin-bottom: 1rem;">
+            <a href="{% url 'quizAPP:course_detail' course.id %}" class="btn btn-outline" style="margin-bottom: 1rem;">
+                ← Back to Course
+            </a>
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div>
+                    <h1>{{ lesson.title }}</h1>
+                    <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                        <span class="badge" style="background: {% if course.language == 'english' %}#3b82f6{% else %}#10b981{% endif %}; color: white; padding: 0.25rem 0.75rem; border-radius: 4px;">
+                            {{ course.get_language_display }}
+                        </span>
+                        <span class="badge" style="background: #6b7280; color: white; padding: 0.25rem 0.75rem; border-radius: 4px;">
+                            {{ course.get_level_display }}
+                        </span>
+                        <span class="badge" style="background: #3b82f6; color: white; padding: 0.25rem 0.75rem; border-radius: 4px;">
+                            Lesson {{ lesson_number }} of {{ total_lessons }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div style="line-height: 1.8; font-size: 1.1rem; color: #374151;">
+                {{ lesson.content|safe|linebreaks }}
+            </div>
+        </div>
+        
+        <div class="card mt-4" style="background: #f3f4f6;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                {% if previous_lesson %}
+                <a href="{% url 'quizAPP:lesson_detail' course.id previous_lesson.id %}" class="btn btn-outline">
+                    ← Previous Lesson
+                </a>
+                {% else %}
+                <span></span>
+                {% endif %}
+                
+                <a href="{% url 'quizAPP:course_detail' course.id %}" class="btn btn-outline">
+                    Course Overview
+                </a>
+                
+                {% if next_lesson %}
+                <a href="{% url 'quizAPP:lesson_detail' course.id next_lesson.id %}" class="btn btn-primary">
+                    Next Lesson →
+                </a>
+                {% else %}
+                <span></span>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+.card p {
+    margin-bottom: 1rem;
+}
+
+.card h2, .card h3, .card h4 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    color: #1f2937;
+}
+
+.card h2:first-child, .card h3:first-child, .card h4:first-child {
+    margin-top: 0;
+}
+
+.card ul, .card ol {
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.card li {
+    margin-bottom: 0.5rem;
+}
+
+.card strong {
+    color: #1f2937;
+    font-weight: 600;
+}
+</style>
+{% endblock %}
+

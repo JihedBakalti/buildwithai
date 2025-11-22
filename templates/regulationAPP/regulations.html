@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Regulations - Farmlink{% endblock %}
+
+{% block content %}
+<main class="main-content">
+    <div class="page-header">
+        <h1>⚖️ My Water Regulations</h1>
+        <p>Below are your recorded fines and compliance notices.</p>
+    </div>
+
+    <!-- Table of Fines -->
+    <div class="card mt-4">
+        <h3>Fines</h3>
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                        <th>Amount</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in regulations %}
+                    <tr>
+                        <td>#R{{ r.id }}</td>
+                        <td>{{ r.date_infraction|date:"M d, Y" }}</td>
+                        <td>{{ r.get_type_display }}</td>
+                        <td>{{ r.motif }}</td>
+                        <td>${{ r.montant|floatformat:2 }}</td>
+                        <td>{{ r.deadline_date|date:"M d, Y" }}</td>
+                        <td>
+                            {% if r.statut %}
+                                <span class="status status-success">Paid</span>
+                            {% else %}
+                                <span class="status status-warning">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if not r.statut %}
+                                <a href="#" class="btn btn-primary btn-sm">Pay</a>
+                            {% endif %}
+                            <a href="{% url 'regulation_detail_view' r.id %}" class="btn btn-secondary btn-sm">Details</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="8" class="text-center">No regulations found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Appeal Form -->
+    <div class="card mt-4">
+        <h3>Submit Appeal or Inquiry</h3>
+        <form method="post" action="{% url 'appeal' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="form-label">Type of Appeal</label>
+                <select name="appeal_type" class="form-input" required>
+                    <option value="">Select type...</option>
+                    <option value="quota">Quota Adjustment</option>
+                    <option value="fine">Fine Dispute</option>
+                    <option value="other">Other Inquiry</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea name="description" class="form-input" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Appeal</button>
+        </form>
+    </div>
+</main>
+{% endblock %}

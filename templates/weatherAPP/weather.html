@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Weather Records - Farmlink{% endblock %}
+
+{% block content %}
+<div class="container">
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Weather Forecast</h1>
+            <a href="{% url 'weather_create' %}" class="btn btn-primary">+ Add New Weather Record</a>
+        </div>
+
+        <!-- Filter by Region -->
+        <div class="filter-section" style="margin-bottom: 20px;">
+            <label for="regionFilter" class="form-label">Filter by Region:</label>
+            <select id="regionFilter" class="form-input" onchange="filterByRegion(this.value)">
+                <option value="">All Regions</option>
+                {% for region in regions %}
+                <option value="{{ region.id }}">{{ region.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Weather Table -->
+        <div class="card">
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Date</th>
+                            <th>Region</th>
+                            <th>Temperature (°C)</th>
+                            <th>Humidity (%)</th>
+                            <th>Precipitation (mm)</th>
+                            <th style="text-align: center; min-width: 250px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="weatherTable">
+                        {% for weather in weathers %}
+                        <tr data-region="{{ weather.region.id }}">
+                            <td>{{ weather.id_weather }}</td>
+                            <td>{{ weather.date }}</td>
+                            <td>{{ weather.region.name|default:"-" }}</td>
+                            <td>{{ weather.temperature }}</td>
+                            <td>{{ weather.humidite }}</td>
+                            <td>{{ weather.precipitation }}</td>
+                            <td style="text-align: center; min-width: 250px;">
+                                <a href="{% url 'weather_detail' weather.id_weather %}" class="btn btn-secondary btn-sm" style="margin: 0 4px;">Details</a>
+                                <a href="{% url 'weather_update' weather.id_weather %}" class="btn btn-secondary btn-sm" style="margin: 0 4px;">Edit</a>
+                                <a href="{% url 'weather_delete' weather.id_weather %}" class="btn btn-secondary btn-sm" style="margin: 0 4px;">Delete</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No weather records available.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    function filterByRegion(regionId) {
+        const rows = document.querySelectorAll("#weatherTable tr");
+        rows.forEach(row => {
+            if (!regionId || row.dataset.region === regionId) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    }
+</script>
+{% endblock %}

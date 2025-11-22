@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {{ view.object.name|default:"Add Farm" }} - Farmlink
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <main class="main-content">
+        <div class="form-container" data-aos="fade-up" style="max-width: 50%; margin: 5rem auto;">
+            <h2 class="text-center hero-title" style="color: #00a19e;">{{ view.object.name|default:"Add New Farm" }}</h2>
+            <form method="post" class="form-modern" novalidate>
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+
+            {% if form.errors %}
+                <div class="alert alert-danger mb-3">
+                    <ul>
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li>{{ field.label }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            {% for field in form %}
+                {% if field.name != 'owner' %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-gradient btn-large">
+                    {% if view.object %}Update Farm{% else %}Add Farm{% endif %}
+                </button>
+            </div>
+
+            <div class="text-center mt-4">
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="{% url 'farms' %}" class="btn btn-outline">Cancel</a>
+                </div>
+            </div>
+        </form>
+    </div>
+    </main>
+</div>
+{% endblock %}

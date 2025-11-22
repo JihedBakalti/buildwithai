@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Faire une réclamation{% endblock %}
+{% block content %}
+<div class="card mt-4">
+    <h2>Contestation de l’amende #{{ regulation.id }}</h2>
+    <p><strong>Type :</strong> {{ regulation.get_type_display }}</p>
+    <p><strong>Motif :</strong> {{ regulation.motif }}</p>
+    <hr>
+
+    <form method="post" class="form">
+        {% csrf_token %}
+            <div class="form-group">
+                <label class="form-label">Type of Appeal</label>
+                <select name="appeal_type" class="form-input" required>
+                    <option value="">Select type...</option>
+                    <option value="quota">Quota Adjustment</option>
+                    <option value="fine">Fine Dispute</option>
+                    <option value="other">Other Inquiry</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea name="description" class="form-input" rows="4" required></textarea>
+            </div>
+        <button type="submit" class="btn btn-primary">Envoyer la réclamation</button>
+        <a href="{% url 'regulation_detail_view' regulation.pk %}" class="btn btn-secondary">Annuler</a>
+    </form>
+</div>
+{% endblock %}
+
+  

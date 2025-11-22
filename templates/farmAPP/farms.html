@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Farms Management - Farmlink{% endblock %}
+
+{% block content %}
+<div class="container">
+    <main class="main-content">
+        <div class="page-header">
+            <h1>My Farms</h1>
+            <a href="{% url 'farm_create' %}" class="btn btn-primary">+ Add New Farm</a>        </div>
+
+        <!-- Farms Table -->
+        <div class="card">
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Farm Name</th>
+                            <th>Location</th>
+                            <th>Region</th>
+                            <th style="text-align: center; min-width: 250px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for farm in farms %}
+                        <tr>
+                            <td>{{ farm.name }}</td>
+                            <td>{{ farm.location|default:"-" }}</td>
+                            <td>
+                            {% if farm.region %}
+                                {{ farm.region.name }}
+                            {% else %}
+                -
+                            {% endif %}
+                            </td>
+                            <td style="text-align: center; min-width: 250px;">
+                                <a href="{% url 'farm_update' farm.id %}" class="btn btn-secondary btn-sm" style="margin: 0 4px;">Edit</a>
+                                <a href="{% url 'farm_detail' farm.id %}" class="btn btn-secondary btn-sm" style="margin: 0 4px;">Details</a>
+                                <a href="{% url 'farm_delete' farm.id %}" class="btn btn-secondary btn-sm" style="margin: 0 4px;">Delete</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">No farms available.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Farm Details Modal -->
+        <div id="farmDetailsModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h2>Farm Details</h2>
+                <div class="farm-details-content">
+                    <!-- Details will be populated by JavaScript -->
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" onclick="closeFarmDetailsModal()">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Irrigation History Modal -->
+        <div id="irrigationHistoryModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h2>Irrigation History</h2>
+                <div class="irrigation-history-content">
+                    <!-- History will be populated by JavaScript -->
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" onclick="closeIrrigationHistoryModal()">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add/Edit Farm Form (Hidden by default) -->
+        <div id="farmFormModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h2>Add New Farm</h2>
+                <form id="farmForm" onsubmit="handleFarmSubmit(event)">
+                    <div class="form-group">
+                        <label for="farmName" class="form-label">Farm Name</label>
+                        <input type="text" id="farmName" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="farmSize" class="form-label">Size (hectares)</label>
+                        <input type="number" id="farmSize" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="soilType" class="form-label">Soil Type</label>
+                        <select id="soilType" class="form-input" required>
+                            <option value="CL">Clay</option>
+                            <option value="SL">Sandy Loam</option>
+                            <option value="LO">Loam</option>
+                            <option value="SA">Sandy</option>
+                            <option value="PE">Peaty</option>
+                            <option value="CH">Chalky</option>
+                            <option value="SI">Silty</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="location" class="form-label">Location</label>
+                        <input type="text" id="location" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="region" class="form-label">Region</label>
+                        <select id="region" class="form-input">
+                            <option value="">-- Select Region --</option>
+                            {% for region in regions %}
+                                <option value="{{ region.id }}">{{ region.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Save Farm</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeFarmForm()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<script src="{% static 'js/main.js' %}"></script>
+<script>
+    function showAddFarmForm() {
+        document.getElementById('farmFormModal').style.display = 'block';
+    }
+
+    function closeFarmForm() {
+        document.getElementById('farmFormModal').style.display = 'none';
+    }
+
+    function handleFarmSubmit(event) {
+        event.preventDefault();
+        // Handle form submission here
+        closeFarmForm();
+        alert('Farm saved successfully!');
+    }
+
+    function editFarm(id) {
+        showAddFarmForm();
+        document.querySelector('#farmFormModal h2').textContent = 'Edit Farm';
+    }
+
+    function viewDetails(id) {
+        const modal = document.getElementById('farmDetailsModal');
+        modal.style.display = 'block';
+        const detailsContent = modal.querySelector('.farm-details-content');
+        detailsContent.innerHTML = `Details for farm ID ${id} will appear here.`;
+    }
+
+    function viewIrrigationHistory(id) {
+        const modal = document.getElementById('irrigationHistoryModal');
+        modal.style.display = 'block';
+        const historyContent = modal.querySelector('.irrigation-history-content');
+        historyContent.innerHTML = `Irrigation history for farm ID ${id} will appear here.`;
+    }
+
+    function closeFarmDetailsModal() {
+        document.getElementById('farmDetailsModal').style.display = 'none';
+    }
+
+    function closeIrrigationHistoryModal() {
+        document.getElementById('irrigationHistoryModal').style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+        const farmFormModal = document.getElementById('farmFormModal');
+        const farmDetailsModal = document.getElementById('farmDetailsModal');
+        const irrigationHistoryModal = document.getElementById('irrigationHistoryModal');
+        if (event.target === farmFormModal) farmFormModal.style.display = 'none';
+        if (event.target === farmDetailsModal) farmDetailsModal.style.display = 'none';
+        if (event.target === irrigationHistoryModal) irrigationHistoryModal.style.display = 'none';
+    }
+</script>
+{% endblock %}
+

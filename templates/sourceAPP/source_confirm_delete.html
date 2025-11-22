@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+
+<div class="text-center my-5">
+  <h1 class="display-5 mb-4 text-danger">
+    <i class="fa fa-trash me-2"></i> Confirmer la Suppression
+  </h1>
+  <p class="lead fs-4 text-muted">Cette action est irréversible.</p>
+</div>
+
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-6">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body p-5 text-center">
+        <h3 class="card-title text-primary">
+          <i class="fa fa-tint me-2"></i> {{ object.type }}
+        </h3>
+        <p class="card-text fs-5">
+          <strong>Localisation :</strong> {{ object.localisation }}<br>
+          <strong>pH :</strong> {{ object.ph }}<br>
+          <strong>Salinité :</strong> {{ object.salinite }}<br>
+          <strong>Utilisable :</strong>
+          {% if object.statutUtilisable %} ✅ Oui {% else %} ❌ Non {% endif %}
+        </p>
+        <hr class="my-4">
+
+        <form method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger btn-lg px-5 me-3">
+            <i class="fa fa-trash me-2"></i> Supprimer
+          </button>
+          <a href="{% url 'source' %}" class="btn btn-secondary btn-lg px-5">
+            <i class="fa fa-arrow-left me-2"></i> Annuler
+          </a>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

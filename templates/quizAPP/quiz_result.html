@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <main class="main-content">
+        <h1>Quiz Results</h1>
+        
+        <div class="card mt-4">
+            <div style="text-align: center;">
+                <div style="width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, {% if attempt.score >= 80 %}#16a34a{% elif attempt.score >= 60 %}#eab308{% else %}#dc2626{% endif %} 0%, {% if attempt.score >= 80 %}#15803d{% elif attempt.score >= 60 %}#ca8a04{% else %}#b91c1c{% endif %} 100%); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: white; font-size: 3rem; font-weight: bold;">
+                    {{ attempt.score|floatformat:0 }}%
+                </div>
+                <h2>{{ quiz.title }}</h2>
+                <p style="color: #6b7280; margin: 0.5rem 0;">
+                    You got {{ attempt.correct_answers }} out of {{ attempt.total_questions }} questions correct
+                </p>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <h3>Question Review</h3>
+            {% for user_answer in user_answers %}
+            <div style="margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid #e5e7eb;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                    <h4>Question {{ forloop.counter }}</h4>
+                    {% if user_answer.is_correct %}
+                    <span style="background: #16a34a; color: white; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.9rem;">
+                        ✅ Correct
+                    </span>
+                    {% else %}
+                    <span style="background: #dc2626; color: white; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.9rem;">
+                        ❌ Incorrect
+                    </span>
+                    {% endif %}
+                </div>
+                
+                <p style="font-size: 1.1rem; margin-bottom: 1rem; line-height: 1.6;">{{ user_answer.question.question_text }}</p>
+                
+                <div style="margin-bottom: 0.5rem;">
+                    <strong>Your Answer:</strong>
+                    <span style="background: {% if user_answer.is_correct %}#dcfce7{% else %}#fee2e2{% endif %}; padding: 0.5rem 1rem; border-radius: 4px; display: inline-block; margin-left: 0.5rem;">
+                        {{ user_answer.selected_answer.answer_text|default:"No answer selected" }}
+                    </span>
+                </div>
+                
+                {% if not user_answer.is_correct %}
+                <div>
+                    <strong>Correct Answer:</strong>
+                    <span style="background: #dcfce7; padding: 0.5rem 1rem; border-radius: 4px; display: inline-block; margin-left: 0.5rem;">
+                        {% for answer in user_answer.question.answers.all %}
+                            {% if answer.is_correct %}{{ answer.answer_text }}{% endif %}
+                        {% endfor %}
+                    </span>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="mt-4" style="display: flex; gap: 1rem;">
+            <a href="{% url 'quizAPP:quiz_detail' quiz.id %}" class="btn btn-primary">Retake Quiz</a>
+            <a href="{% url 'quizAPP:quiz_list' %}" class="btn btn-outline">Back to Quizzes</a>
+        </div>
+    </main>
+</div>
+{% endblock %}
+

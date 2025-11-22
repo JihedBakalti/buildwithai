@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}Regulation Details - Farmlink{% endblock %}
+{% block content %}
+<div class="card mt-4">
+    <h2>Regulation #R{{ regulation.id }}</h2>
+    <p><strong>Date:</strong> {{ regulation.date_infraction|date:"M d, Y" }}</p>
+    <p><strong>Type:</strong> {{ regulation.get_type_display }}</p>
+    <p><strong>Description:</strong> {{ regulation.motif }}</p>
+    <p><strong>Amount:</strong> ${{ regulation.montant|floatformat:2 }}</p>
+    <p><strong>Due Date:</strong> {{ regulation.deadline_date|date:"M d, Y" }}</p>
+    <p><strong>Status:</strong>
+        {% if regulation.statut %}
+            <span class="status status-success">Paid</span>
+        {% else %}
+            <span class="status status-warning">Pending</span>
+        {% endif %}
+    </p>
+
+    {% if not regulation.statut %}
+    <a href="#" class="btn btn-primary">💳 Pay Now</a>
+    {% endif %}
+    <a href="{% url 'regulations' %}" class="btn btn-secondary">⬅️ Back</a>
+    <a href="{% url 'regulation_appeal' regulation.pk %}" class="btn btn-warning mt-3">📩 Faire une réclamation</a>
+</div>
+{% endblock %}

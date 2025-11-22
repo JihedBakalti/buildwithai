@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}{{ farm.name }} - Farmlink{% endblock %}
+
+{% block content %}
+<h2>{{ farm.name }}</h2>
+<div class="details-grid">
+    <div class="detail-item"><strong>Farm Name:</strong> {{ farm.name }}</div>
+    <div class="detail-item"><strong>Area:</strong> {{ farm.area }} ha</div>
+    <div class="detail-item"><strong>Soil Type:</strong> {{ farm.get_soil_type_display }}</div>
+    <div class="detail-item"><strong>Location:</strong> {{ farm.location|default:"-" }}</div>
+    <div class="detail-item"><strong>Region:</strong> {{ farm.region.name|default:"-" }}</div>
+</div>
+
+<div class="mt-4">
+    <a href="{% url 'farm_update' farm.id %}" class="btn btn-primary">Edit</a>
+    <a href="{% url 'farm_delete' farm.id %}" class="btn btn-danger">Delete</a>
+    <a href="{% url 'farms' %}" class="btn btn-secondary">Back</a>
+</div>
+{% endblock %}

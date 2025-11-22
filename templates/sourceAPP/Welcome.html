@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Liste des Sources d’Eau{% endblock %}
+
+{% block content %}
+<div class="text-center my-5">
+  <h1 class="display-4 text-primary">Bienvenue dans la Gestion des Sources d’Eau 💧</h1>
+  <p class="lead">Visualisez, ajoutez et gérez facilement vos sources d’eau.</p>
+
+  <a href="{% url 'source_list' %}" class="btn btn-lg btn-success mt-4">
+    <i class="fa fa-list me-2"></i> Voir la Liste des Sources
+  </a>
+</div>

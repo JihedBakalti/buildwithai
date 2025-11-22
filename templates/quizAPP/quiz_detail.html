@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <main class="main-content">
+        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+            <div>
+                <h1>{{ quiz.title }}</h1>
+                <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                    <span class="badge" style="background: {% if quiz.language == 'english' %}#3b82f6{% else %}#10b981{% endif %}; color: white; padding: 0.25rem 0.75rem; border-radius: 4px;">
+                        {{ quiz.get_language_display }}
+                    </span>
+                    <span class="badge" style="background: #6b7280; color: white; padding: 0.25rem 0.75rem; border-radius: 4px;">
+                        {{ quiz.get_level_display }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        {% if quiz.description %}
+        <div class="card">
+            <p style="line-height: 1.6;">{{ quiz.description }}</p>
+        </div>
+        {% endif %}
+        
+        <div class="card mt-4">
+            <h3>Quiz Information</h3>
+            <ul style="list-style: none; padding: 0;">
+                <li style="padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
+                    <strong>Questions:</strong> {{ quiz.questions.count }}
+                </li>
+                {% if quiz.time_limit > 0 %}
+                <li style="padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
+                    <strong>Time Limit:</strong> {{ quiz.time_limit }} minutes
+                </li>
+                {% else %}
+                <li style="padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
+                    <strong>Time Limit:</strong> No limit
+                </li>
+                {% endif %}
+                {% if best_score %}
+                <li style="padding: 0.5rem 0;">
+                    <strong>Your Best Score:</strong> {{ best_score|floatformat:1 }}%
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        
+        {% if incomplete_attempt %}
+        <div class="card mt-4" style="background: #fef3c7; border: 1px solid #fbbf24;">
+            <h3>⚠️ Incomplete Attempt</h3>
+            <p>You have an incomplete attempt for this quiz. Would you like to continue or start fresh?</p>
+            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                <a href="{% url 'quizAPP:quiz_take' quiz.id %}" class="btn btn-primary">Continue Quiz</a>
+                <form method="post" action="{% url 'quizAPP:quiz_detail' quiz.id %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline" name="restart" value="1">Start Fresh</button>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <div class="card mt-4">
+            <a href="{% url 'quizAPP:quiz_take' quiz.id %}" class="btn btn-primary btn-large" style="width: 100%;">
+                Start Quiz
+            </a>
+        </div>
+        {% endif %}
+        
+        <div class="mt-4">
+            <a href="{% url 'quizAPP:quiz_list' %}" class="btn btn-outline">← Back to Quizzes</a>
+        </div>
+    </main>
+</div>
+{% endblock %}
+

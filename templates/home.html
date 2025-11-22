@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+
+    {% block content %}
+    <div class="container">
+        <main class="main-content">
+            <h1>Welcome back, <span id="userName">{{ user.first_name|default:user.username }}</span>!</h1>
+            
+            <div class="grid grid-2 mt-4">
+                <div class="card">
+                    <h3>Learning Progress</h3>
+                    <div class="consumption-stats">
+                        <div class="stat">
+                            <span class="label">This Week</span>
+                            <span class="value">0 min</span>
+                            <div class="progress-bar">
+                                <div class="progress" style="width: 0%;"></div>
+                            </div>
+                            <span class="sub-text">Start learning to track your progress</span>
+                        </div>
+                        <div class="stat">
+                            <span class="label">Today's Study</span>
+                            <span class="value">0 min</span>
+                            <div class="progress-bar">
+                                <div class="progress" style="width: 0%;"></div>
+                            </div>
+                            <span class="sub-text">Keep your daily streak going!</span>
+                        </div>
+                        <div class="stat">
+                            <span class="label">Current Level</span>
+                            <span class="value">Beginner</span>
+                            <span class="sub-text" style="color: #16a34a;">
+                                Ready to start your journey!
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>Quick Stats</h3>
+                    <div class="weather-grid">
+                        <div class="weather-item">
+                            <div class="day">Quizzes</div>
+                            <div class="icon">📝</div>
+                            <div class="temp">0</div>
+                            <div class="desc">Completed</div>
+                        </div>
+                        <div class="weather-item">
+                            <div class="day">Grammar</div>
+                            <div class="icon">📚</div>
+                            <div class="temp">0</div>
+                            <div class="desc">Lessons</div>
+                        </div>
+                        <div class="weather-item">
+                            <div class="day">Streak</div>
+                            <div class="icon">🔥</div>
+                            <div class="temp">0</div>
+                            <div class="desc">Days</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-3 mt-4">
+                <div class="card">
+                    <h3>Learning Modules</h3>
+                    <ul class="status-list">
+                        <li>
+                            <span class="name">Vocabulary</span>
+                            <span class="status status-warning">Not Started</span>
+                        </li>
+                        <li>
+                            <span class="name">Grammar</span>
+                            <span class="status status-warning">Not Started</span>
+                        </li>
+                        <li>
+                            <span class="name">Reading</span>
+                            <span class="status status-warning">Not Started</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Recent Activity</h3>
+                    <ul class="status-list">
+                        <li>
+                            <span class="name">Welcome to InstructMe!</span>
+                            <span class="status status-success">Just now</span>
+                        </li>
+                        <li>
+                            <span class="name">Start your first quiz</span>
+                            <span class="status status-warning">Get started</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Quick Actions</h3>
+                    <div class="quick-actions">
+                        <a href="{% url 'quizAPP:course_list' %}" class="action-btn">
+                            <span class="icon">📖</span>
+                            <span class="text">View Courses</span>
+                        </a>
+                        <a href="{% url 'quizAPP:quiz_list' %}" class="action-btn">
+                            <span class="icon">📝</span>
+                            <span class="text">Take a Quiz</span>
+                        </a>
+                        <a href="{% url 'grammarAPP:grammar_helper' %}" class="action-btn">
+                            <span class="icon">📚</span>
+                            <span class="text">Grammar Helper</span>
+                        </a>
+                        <a href="{% url 'profile' %}" class="action-btn">
+                            <span class="icon">👤</span>
+                            <span class="text">View Profile</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    {%endblock%}

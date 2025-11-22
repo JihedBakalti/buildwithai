@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Weather Record - Farmlink{% endblock %}
+
+{% block content %}
+<div class="container"style="margin-top: 80px;">
+    <h2>Delete Weather Record</h2>
+    <p>Are you sure you want to delete the record for <strong>{{ weather.date }}</strong> in <strong>{{ weather.region.name|default:"-" }}</strong>?</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+        <a href="{% url 'weather' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

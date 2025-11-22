@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Delete {{ farm.name }} - Farmlink{% endblock %}
+
+{% block content %}
+<h2>Delete Farm</h2>
+<p>Are you sure you want to delete "{{ farm.name }}"?</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+    <a href="{% url 'farms' %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

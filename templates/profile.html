@@ -1,0 +1,318 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profile - InstructMe{% endblock %}
+
+{% block content %}
+<main class="main-content">
+    <div class="page-header">
+        <h1>My Profile</h1>
+    </div>
+
+    <div class="grid grid-2">
+        <!-- Personal Information -->
+        <div class="card">
+            <h3>Personal Information</h3>
+            <form method="post" id="profileForm">
+                {% csrf_token %}
+                <input type="hidden" name="profile_submit" value="1">
+                
+                <div class="form-group">
+                    <label for="id_first_name" class="form-label">First Name</label>
+                    {{ profile_form.first_name }}
+                    {% if profile_form.first_name.errors %}
+                        <div class="text-danger">{{ profile_form.first_name.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_last_name" class="form-label">Last Name</label>
+                    {{ profile_form.last_name }}
+                    {% if profile_form.last_name.errors %}
+                        <div class="text-danger">{{ profile_form.last_name.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_email" class="form-label">Email Address</label>
+                    {{ profile_form.email }}
+                    {% if profile_form.email.errors %}
+                        <div class="text-danger">{{ profile_form.email.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_numtel" class="form-label">Phone Number</label>
+                    {{ profile_form.numtel }}
+                    {% if profile_form.numtel.errors %}
+                        <div class="text-danger">{{ profile_form.numtel.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn btn-primary">Update Profile</button>
+            </form>
+        </div>
+
+        <!-- Notification Settings -->
+        <div class="card">
+            <h3>Notification Settings</h3>
+            <form id="notificationForm">
+                <div class="form-group">
+                    <label class="form-label">Email Notifications</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> Water Usage Alerts
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> Weather Updates
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> Compliance Notifications
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> System Updates
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">SMS Notifications</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> Emergency Alerts
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox"> Daily Reports
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> Quota Warnings
+                        </label>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="handleNotificationUpdate(event)">Save Preferences</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Security Settings -->
+    <div class="card mt-4">
+        <h3>Security Settings</h3>
+        <form method="post" id="securityForm">
+            {% csrf_token %}
+            <input type="hidden" name="password_submit" value="1">
+            
+            <div class="form-group">
+                <label for="id_old_password" class="form-label">Current Password</label>
+                {{ password_form.old_password }}
+                {% if password_form.old_password.errors %}
+                    <div class="text-danger">{{ password_form.old_password.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_new_password1" class="form-label">New Password</label>
+                {{ password_form.new_password1 }}
+                {% if password_form.new_password1.errors %}
+                    <div class="text-danger">{{ password_form.new_password1.errors }}</div>
+                {% endif %}
+                {% if password_form.new_password1.help_text %}
+                    <small class="form-text text-muted">{{ password_form.new_password1.help_text }}</small>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_new_password2" class="form-label">Confirm New Password</label>
+                {{ password_form.new_password2 }}
+                {% if password_form.new_password2.errors %}
+                    <div class="text-danger">{{ password_form.new_password2.errors }}</div>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-primary">Change Password</button>
+        </form>
+    </div>
+
+    <!-- QR Code Login -->
+    <div class="card mt-4">
+        <h3>Quick QR Login</h3>
+        <p class="text-muted">Scan this QR code with your mobile device to enable quick login. Keep this code secure.</p>
+        <div class="text-center mt-3">
+            <img src="{% url 'generate_qr_code' %}" alt="QR Code" id="qrCodeImage" style="max-width: 300px; border: 2px solid #ddd; padding: 10px; background: white;">
+        </div>
+        <div class="text-center mt-3" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+            <button type="button" class="btn btn-secondary" onclick="refreshQRCode(event)">Refresh QR Code</button>
+            <button type="button" class="btn btn-warning" onclick="regenerateQRCode(event)">🔄 Regenerate New QR Code</button>
+        </div>
+        <div class="alert alert-warning mt-3">
+            <strong>⚠️ Warning:</strong> Regenerating will invalidate your current QR code. You'll need to scan the new code to login.
+        </div>
+        <div class="alert alert-info mt-3">
+            <strong>How to use:</strong> When logging in, click "Quick QR Auth" and scan this code with your camera.
+        </div>
+    </div>
+
+    <!-- Account Activity -->
+    <div class="card mt-4">
+        <h3>Recent Activity</h3>
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Activity</th>
+                        <th>Location</th>
+                        <th>Device</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for activity in recent_activity %}
+                    <tr>
+                        <td>{{ activity.date }}</td>
+                        <td>{{ activity.activity }}</td>
+                        <td>{{ activity.location }}</td>
+                        <td>{{ activity.device }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center">No recent activity</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<script>
+    function handleNotificationUpdate(event) {
+        event.preventDefault();
+        alert('Notification preferences saved!');
+    }
+    
+    function refreshQRCode(event) {
+        const img = document.getElementById('qrCodeImage');
+        if (!img) {
+            console.error('QR code image element not found');
+            alert('Error: QR code image not found');
+            return;
+        }
+        
+        // Get the base URL (remove any existing query parameters)
+        let qrUrl = "{% url 'generate_qr_code' %}";
+        const timestamp = new Date().getTime();
+        
+        // Get button for visual feedback
+        const btn = event ? event.target : document.querySelector('button[onclick*="refreshQRCode"]');
+        const originalText = btn ? btn.textContent : 'Refresh QR Code';
+        
+        // Add visual feedback
+        if (btn) {
+            btn.textContent = 'Refreshing...';
+            btn.disabled = true;
+        }
+        
+        // Force browser to reload by adding timestamp
+        img.src = qrUrl + '?refresh=' + timestamp;
+        
+        img.onload = function() {
+            console.log('QR code refreshed successfully');
+            if (btn) {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        };
+        
+        img.onerror = function() {
+            console.error('Error loading QR code');
+            alert('Error refreshing QR code. Please try again.');
+            if (btn) {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        };
+    }
+    
+    function regenerateQRCode(event) {
+        if (!confirm('Are you sure you want to regenerate a new QR code? Your current QR code will stop working and you will need to scan the new one to login.')) {
+            return;
+        }
+        
+        const btn = event ? event.target : document.querySelector('button[onclick*="regenerateQRCode"]');
+        const originalText = btn ? btn.textContent : '🔄 Regenerate New QR Code';
+        
+        // Add visual feedback
+        if (btn) {
+            btn.textContent = 'Regenerating...';
+            btn.disabled = true;
+        }
+        
+        // Get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        const csrftoken = getCookie('csrftoken');
+        
+        // Send request to regenerate
+        fetch('{% url "regenerate_qr_hash" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Refresh the QR code image
+                const img = document.getElementById('qrCodeImage');
+                if (img) {
+                    const timestamp = new Date().getTime();
+                    img.src = "{% url 'generate_qr_code' %}?regenerated=" + timestamp;
+                }
+                
+                alert('QR code has been regenerated successfully! Your old QR code will no longer work.');
+                
+                if (btn) {
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                }
+            } else {
+                alert('Error: ' + (data.message || 'Could not regenerate QR code'));
+                if (btn) {
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error regenerating QR code. Please try again.');
+            if (btn) {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        });
+    }
+    
+    // Add active class to profile link in navbar
+    document.addEventListener('DOMContentLoaded', function() {
+        const profileLink = document.querySelector('a[href="{% url 'profile' %}"]');
+        if (profileLink) {
+            profileLink.classList.add('active');
+        }
+    });
+</script>
+{% endblock %}
+

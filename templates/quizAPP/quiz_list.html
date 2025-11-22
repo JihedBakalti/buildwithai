@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <main class="main-content">
+        <h1>Quizzes</h1>
+        <p>Test your knowledge with interactive quizzes in English and French.</p>
+        
+        <!-- Filters -->
+        <div class="card mt-4">
+            <h3>Filter Quizzes</h3>
+            <form method="get" class="filter-form" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: end;">
+                <div>
+                    <label for="language">Language:</label>
+                    <select name="language" id="language" class="form-control" style="min-width: 150px;">
+                        <option value="">All Languages</option>
+                        <option value="english" {% if selected_language == 'english' %}selected{% endif %}>English</option>
+                        <option value="french" {% if selected_language == 'french' %}selected{% endif %}>French</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="level">Level:</label>
+                    <select name="level" id="level" class="form-control" style="min-width: 150px;">
+                        <option value="">All Levels</option>
+                        <option value="beginner" {% if selected_level == 'beginner' %}selected{% endif %}>Beginner</option>
+                        <option value="intermediate" {% if selected_level == 'intermediate' %}selected{% endif %}>Intermediate</option>
+                        <option value="advanced" {% if selected_level == 'advanced' %}selected{% endif %}>Advanced</option>
+                    </select>
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                    <a href="{% url 'quizAPP:quiz_list' %}" class="btn btn-outline">Clear</a>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Quiz List -->
+        <div class="grid grid-3 mt-4">
+            {% for quiz in quizzes %}
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                    <span class="badge" style="background: {% if quiz.language == 'english' %}#3b82f6{% else %}#10b981{% endif %}; color: white; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.85rem;">
+                        {{ quiz.get_language_display }}
+                    </span>
+                    <span class="badge" style="background: #6b7280; color: white; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.85rem;">
+                        {{ quiz.get_level_display }}
+                    </span>
+                </div>
+                <h3>{{ quiz.title }}</h3>
+                {% if quiz.description %}
+                <p style="color: #6b7280; margin: 0.5rem 0;">{{ quiz.description|truncatewords:20 }}</p>
+                {% endif %}
+                <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e5e7eb;">
+                    <p style="font-size: 0.9rem; color: #6b7280; margin: 0.5rem 0;">
+                        📝 {{ quiz.questions.count }} questions
+                        {% if quiz.time_limit > 0 %}
+                        | ⏱️ {{ quiz.time_limit }} min
+                        {% endif %}
+                    </p>
+                    <a href="{% url 'quizAPP:quiz_detail' quiz.id %}" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">
+                        Start Quiz
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="card" style="grid-column: 1 / -1;">
+                <p>No quizzes found. Please try different filters.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+</div>
+{% endblock %}
+

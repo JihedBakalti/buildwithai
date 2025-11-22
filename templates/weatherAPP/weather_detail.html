@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ weather.date }} - Farmlink{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Weather Details</h2>
+    <div class="details-grid">
+        <div class="detail-item"><strong>Date:</strong> {{ weather.date }}</div>
+        <div class="detail-item"><strong>Region:</strong> {{ weather.region.name|default:"-" }}</div>
+        <div class="detail-item"><strong>Temperature:</strong> {{ weather.temperature }} °C</div>
+        <div class="detail-item"><strong>Humidity:</strong> {{ weather.humidite }} %</div>
+        <div class="detail-item"><strong>Precipitation:</strong> {{ weather.precipitation }} mm</div>
+    </div>
+
+    <div class="mt-4">
+        <a href="{% url 'weather_update' weather.id_weather %}" class="btn btn-primary">Edit</a>
+        <a href="{% url 'weather_delete' weather.id_weather %}" class="btn btn-danger">Delete</a>
+        <a href="{% url 'weather' %}" class="btn btn-secondary">Back</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InstructMe</title>
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'vendor/aos/aos.css' %}">
+</head>
+<body class="landing-page">
+    <div class="hero">
+        <div class="container">
+            <header class="hero-content">
+                <!-- Use logo image instead of text title -->
+                <img src="{% static 'img/logo-placeholder.png' %}" alt="InstructMe" class="hero-logo" data-aos="zoom-in">
+                <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="200">
+                    Master Languages with Interactive Learning
+                </p>
+                <div class="hero-actions" data-aos="fade-up" data-aos-delay="400">
+                    <a href="{% url 'login' %}" class="btn btn-primary btn-large">Login</a>
+                    <a href="{% url 'inscription' %}" class="btn btn-outline btn-large">Sign Up</a>
+                </div> 
+            </header>
+        </div>
+    </div>
+
+    <main class="container">
+        <section class="features-section">
+            <h2 class="section-title" data-aos="fade-up">InstructMe Features</h2>
+            <div class="features-grid">
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-icon">📝</div>
+                    <h3>Interactive Quizzes</h3>
+                    <p>Test your knowledge with engaging quizzes that adapt to your learning level and track your progress.</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-icon">📚</div>
+                    <h3>Grammar Helper</h3>
+                    <p>Get instant help with grammar rules, explanations, and examples to improve your language skills.</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="feature-icon">📊</div>
+                    <h3>Progress Tracking</h3>
+                    <p>Monitor your learning journey with detailed analytics and personalized insights into your progress.</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Personalized Learning</h3>
+                    <p>Learn at your own pace with customized lessons tailored to your skill level and learning goals.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="benefits-section">
+            <div class="benefits-grid">
+                <div class="benefit-item">
+                    <div class="benefit-number">100%</div>
+                    <div class="benefit-text">Interactive Learning</div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-number">24/7</div>
+                    <div class="benefit-text">Available Anytime</div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-number">Real-time</div>
+                    <div class="benefit-text">Progress Tracking</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <div class="cta-content">
+                <h2>Ready to Start Your Language Learning Journey?</h2>
+                <p>Join thousands of learners improving their language skills with our interactive platform.</p>
+                <div class="cta-actions">
+                    <a href="{% url 'login' %}" class="btn btn-primary btn-large">Login</a>
+                    <a href="{% url 'inscription' %}" class="btn btn-outline btn-large">Sign Up</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>InstructMe</h3>
+                    <p>Master languages with interactive learning</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#">About Us</a>
+                    <a href="#">Contact</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JS -->
+    <script src="{% static 'vendor/aos/aos.js' %}"></script>
+    <script>
+        AOS.init({
+            duration: 1000,
+            once: true,
+            offset: 100
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,295 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <main class="main-content">
+        <h1>Grammar Helper</h1>
+        <p>Check your grammar, spelling, and writing style. Paste your text or upload a .txt file.</p>
+        
+        <!-- Form Section -->
+        <div class="card mt-4">
+            <h3>Enter Your Text</h3>
+            <form method="post" enctype="multipart/form-data" class="grammar-form">
+                {% csrf_token %}
+                
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}" style="margin-bottom: 1rem;">
+                            <strong>{% if message.tags == 'error' %}❌ Error:{% elif message.tags == 'success' %}✅ Success:{% elif message.tags == 'warning' %}⚠️ Warning:{% else %}ℹ️ Info:{% endif %}</strong> {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger" style="margin-bottom: 1rem;">
+                        <strong>❌ Form Error:</strong>
+                        <ul style="margin: 0.5rem 0 0 0; padding-left: 1.5rem;">
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+                
+                <div class="form-group">
+                    <label for="{{ form.text_input.id_for_label }}">{{ form.text_input.label }}</label>
+                    {{ form.text_input }}
+                    {% if form.text_input.help_text %}
+                        <small class="form-text text-muted">{{ form.text_input.help_text }}</small>
+                    {% endif %}
+                    {% if form.text_input.errors %}
+                        <div class="text-danger">{{ form.text_input.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group mt-3">
+                    <label for="{{ form.file_upload.id_for_label }}">{{ form.file_upload.label }}</label>
+                    {{ form.file_upload }}
+                    {% if form.file_upload.help_text %}
+                        <small class="form-text text-muted">{{ form.file_upload.help_text }}</small>
+                    {% endif %}
+                    {% if form.file_upload.errors %}
+                        <div class="text-danger">{{ form.file_upload.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary btn-large" id="submit-btn">
+                        <span id="btn-text">Check Grammar</span>
+                        <span id="btn-loading" style="display: none;">⏳ Processing...</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Results Section -->
+        {% if results %}
+        <div class="card mt-4">
+            <h3>Grammar Check Results</h3>
+            
+            <!-- Overall Score -->
+            {% if results.overall_score %}
+            <div class="score-section mb-4">
+                <div class="score-circle" style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, {% if results.overall_score >= 80 %}#16a34a{% elif results.overall_score >= 60 %}#eab308{% else %}#dc2626{% endif %} 0%, {% if results.overall_score >= 80 %}#15803d{% elif results.overall_score >= 60 %}#ca8a04{% else %}#b91c1c{% endif %} 100%); display: flex; align-items: center; justify-content: center; margin: 0 auto; color: white; font-size: 2rem; font-weight: bold;">
+                    {{ results.overall_score }}%
+                </div>
+                <p class="text-center mt-2" style="font-size: 1.1rem; color: #666;">Overall Quality Score</p>
+            </div>
+            {% endif %}
+            
+            <!-- Summary -->
+            {% if results.summary %}
+            <div class="summary-section mb-4">
+                <h4>Summary</h4>
+                <p style="background: #f3f4f6; padding: 1rem; border-radius: 8px; line-height: 1.6;">{{ results.summary }}</p>
+            </div>
+            {% endif %}
+            
+            <!-- Errors List -->
+            {% if results.errors %}
+            <div class="errors-section mb-4">
+                <h4>Errors Found ({{ results.errors|length }})</h4>
+                <div class="errors-list">
+                    {% for error in results.errors %}
+                    <div class="error-item" style="background: #fef2f2; border-left: 4px solid #dc2626; padding: 1rem; margin-bottom: 1rem; border-radius: 4px;">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                            <span class="badge" style="background: #dc2626; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.85rem;">
+                                {{ error.error_type|default:"Error"|title }}
+                            </span>
+                        </div>
+                        <div style="margin-bottom: 0.5rem;">
+                            <strong style="color: #dc2626;">❌ Original:</strong>
+                            <span style="background: #fee2e2; padding: 0.2rem 0.4rem; border-radius: 3px; font-family: monospace;">{{ error.original }}</span>
+                        </div>
+                        <div style="margin-bottom: 0.5rem;">
+                            <strong style="color: #16a34a;">✅ Corrected:</strong>
+                            <span style="background: #dcfce7; padding: 0.2rem 0.4rem; border-radius: 3px; font-family: monospace;">{{ error.corrected }}</span>
+                        </div>
+                        {% if error.explanation %}
+                        <div>
+                            <strong>💡 Explanation:</strong>
+                            <p style="margin: 0.5rem 0 0 0; color: #555;">{{ error.explanation }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% else %}
+            <div class="alert alert-success">
+                <strong>Great job!</strong> No errors found in your text.
+            </div>
+            {% endif %}
+            
+            <!-- Corrected Text -->
+            {% if results.corrected_text %}
+            <div class="corrected-text-section mb-4">
+                <h4>Corrected Text</h4>
+                <div style="background: #f9fafb; border: 1px solid #e5e7eb; padding: 1.5rem; border-radius: 8px; line-height: 1.8; white-space: pre-wrap; font-family: 'Georgia', serif;">
+                    {{ results.corrected_text }}
+                </div>
+                <button onclick="copyCorrectedText()" class="btn btn-outline mt-2" style="margin-top: 1rem;">
+                    📋 Copy Corrected Text
+                </button>
+            </div>
+            {% endif %}
+            
+            <!-- Suggestions -->
+            {% if results.suggestions %}
+            <div class="suggestions-section">
+                <h4>Suggestions for Improvement</h4>
+                <ul style="list-style: none; padding: 0;">
+                    {% for suggestion in results.suggestions %}
+                    <li style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 0.75rem 1rem; margin-bottom: 0.5rem; border-radius: 4px;">
+                        💡 {{ suggestion }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        <!-- Original Text Display (if available) -->
+        {% if original_text and results %}
+        <div class="card mt-4" style="background: #f9fafb;">
+            <h4>Original Text</h4>
+            <div style="background: white; border: 1px solid #e5e7eb; padding: 1.5rem; border-radius: 8px; line-height: 1.8; white-space: pre-wrap; font-family: 'Georgia', serif; max-height: 300px; overflow-y: auto;">
+                {{ original_text }}
+            </div>
+        </div>
+        {% endif %}
+    </main>
+</div>
+
+<script>
+function copyCorrectedText() {
+    const correctedText = `{{ results.corrected_text|escapejs }}`;
+    navigator.clipboard.writeText(correctedText).then(function() {
+        alert('Corrected text copied to clipboard!');
+    }, function(err) {
+        console.error('Failed to copy text: ', err);
+    });
+}
+
+// Add loading state to form submission
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('.grammar-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const btnText = document.getElementById('btn-text');
+    const btnLoading = document.getElementById('btn-loading');
+    
+    if (form && submitBtn) {
+        form.addEventListener('submit', function(e) {
+            // Check if form has text or file
+            const textInput = document.getElementById('text-input');
+            const fileInput = document.getElementById('file-upload');
+            
+            const hasText = textInput && textInput.value.trim().length > 0;
+            const hasFile = fileInput && fileInput.files.length > 0;
+            
+            if (!hasText && !hasFile) {
+                e.preventDefault();
+                alert('Please enter some text or upload a file before submitting.');
+                return false;
+            }
+            
+            // Show loading state
+            if (btnText && btnLoading) {
+                btnText.style.display = 'none';
+                btnLoading.style.display = 'inline';
+            }
+            submitBtn.disabled = true;
+        });
+    }
+});
+</script>
+
+<style>
+.grammar-form {
+    max-width: 100%;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 200px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-outline {
+    background: white;
+    color: #3b82f6;
+    padding: 0.5rem 1rem;
+    border: 1px solid #3b82f6;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-outline:hover {
+    background: #eff6ff;
+}
+
+.alert {
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+}
+
+.alert-danger {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+}
+
+.alert-success {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #166534;
+}
+</style>
+{% endblock %}
+

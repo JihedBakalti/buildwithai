@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Liste des Sources d'Eau{% endblock %}
+
+{% block content %}
+<div class="container">
+    <main class="main-content">
+        <div class="page-header">
+            <h1>
+              <i class="fa fa-tint me-2"></i>
+              Liste des Sources d'Eau
+            </h1>
+            <a href="{% url 'source_create' %}" class="btn btn-primary">
+              <i class="fa fa-plus me-2"></i>
+              Ajouter une Source
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Type</th>
+                            <th>Statut</th>
+                            <th style="text-align: center; min-width: 200px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in source %}
+                        <tr>
+                            <td>{{ s.id }}</td>
+                            <td>{{ s.Type }}</td>
+                            <td>
+                                {% if s.statutUtilisable %}
+                                    <span class="status status-success">Utilisable</span>
+                                {% else %}
+                                    <span class="status status-error">Non utilisable</span>
+                                {% endif %}
+                            </td>
+                            <td style="text-align: center; min-width: 200px;">
+                                <a href="{% url 'source_detail' s.id %}" class="btn btn-warning btn-sm" style="margin: 0 4px;" title="Voir">Detail</a>
+                                <a href="{% url 'source_edit' s.id %}" class="btn btn-success btn-sm" style="margin: 0 4px; background:#28a745; color:#fff; border:none;" title="Modifier">Update</a>
+                                    <button type="button" data-url="{% url 'source_delete' s.id %}" data-name="{{ s.Type }}" class="btn btn-danger btn-sm btn-delete-confirm" style="margin: 0 4px;">Delete</button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center">Aucune source d'eau enregistrée.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+    </div>
+
+        <!-- Confirm Delete Modal -->
+        <div id="confirmDeleteModal" class="modal" style="display:none; position: fixed; inset:0; background: rgba(0,0,0,0.4); align-items:center; justify-content:center;">
+            <div style="background:var(--surface-color); padding:1.5rem; border-radius:8px; width:90%; max-width:420px; box-shadow:var(--shadow);">
+                <h4 style="margin-top:0;">Confirmer la suppression</h4>
+                <p>Voulez-vous vraiment supprimer la source <strong id="deleteItemName"></strong> ? Cette action est irréversible.</p>
+                <form id="deleteForm" method="post" style="display:flex; gap:0.5rem; justify-content:flex-end; margin-top:1rem;">
+                    {% csrf_token %}
+                    <button type="button" id="cancelDelete" class="btn btn-secondary">Annuler</button>
+                    <button type="submit" class="btn btn-danger">Supprimer</button>
+                </form>
+            </div>
+        </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function(){
+        const modal = document.getElementById('confirmDeleteModal');
+        const deleteForm = document.getElementById('deleteForm');
+        const deleteItemName = document.getElementById('deleteItemName');
+
+        document.querySelectorAll('.btn-delete-confirm').forEach(btn => {
+            btn.addEventListener('click', function(e){
+                e.preventDefault();
+                const url = this.getAttribute('data-url');
+                const name = this.getAttribute('data-name') || '';
+                deleteForm.action = url;
+                deleteItemName.textContent = name;
+                modal.style.display = 'flex';
+            });
+        });
+
+        document.getElementById('cancelDelete').addEventListener('click', function(){
+            modal.style.display = 'none';
+        });
+
+        // close modal on outside click
+        modal.addEventListener('click', function(e){
+            if (e.target === modal) modal.style.display = 'none';
+        });
+    });
+    </script>
+    </main>
+</div>
+{% endblock %}

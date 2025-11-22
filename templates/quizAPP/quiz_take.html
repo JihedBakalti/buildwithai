@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <main class="main-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h1>{{ quiz.title }}</h1>
+            <div>
+                <span class="badge" style="background: {% if quiz.language == 'english' %}#3b82f6{% else %}#10b981{% endif %}; color: white; padding: 0.5rem 1rem; border-radius: 4px;">
+                    {{ quiz.get_language_display }} - {{ quiz.get_level_display }}
+                </span>
+            </div>
+        </div>
+        
+        <form method="post" action="{% url 'quizAPP:quiz_submit' quiz.id %}" id="quiz-form">
+            {% csrf_token %}
+            <input type="hidden" name="attempt_id" value="{{ attempt.id }}">
+            
+            {% for question in questions %}
+            <div class="card mt-4">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                    <h3>Question {{ forloop.counter }} of {{ questions|length }}</h3>
+                    <span style="background: #e5e7eb; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.9rem;">
+                        {{ question.points }} point{{ question.points|pluralize }}
+                    </span>
+                </div>
+                
+                <p style="font-size: 1.1rem; margin-bottom: 1.5rem; line-height: 1.6;">{{ question.question_text }}</p>
+                
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    {% for answer in question.answers.all %}
+                    <label style="display: flex; align-items: start; padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; cursor: pointer; transition: all 0.2s; background: white;">
+                        <input type="radio" name="question_{{ question.id }}" value="{{ answer.id }}" required style="margin-right: 0.75rem; margin-top: 0.25rem; cursor: pointer;">
+                        <span style="flex: 1; line-height: 1.5;">{{ answer.answer_text }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+            
+            <div class="card mt-4" style="background: #f3f4f6;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <p style="margin: 0; font-weight: 600;">Total Questions: {{ questions|length }}</p>
+                    <button type="submit" class="btn btn-primary btn-large">
+                        Submit Quiz
+                    </button>
+                </div>
+            </div>
+        </form>
+    </main>
+</div>
+
+<style>
+label:hover {
+    border-color: #3b82f6 !important;
+    background: #eff6ff !important;
+}
+
+input[type="radio"]:checked + span {
+    font-weight: 600;
+}
+
+label:has(input[type="radio"]:checked) {
+    border-color: #3b82f6 !important;
+    background: #eff6ff !important;
+}
+</style>
+{% endblock %}
+

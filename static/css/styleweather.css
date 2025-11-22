@@ -1,0 +1,66 @@
+/* Styles spécifiques pour la page météo */
+.weather-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    margin: 1.5rem 0;
+    font-family: var(--font-family, Arial, sans-serif);
+}
+
+.weather-table thead tr {
+    background: linear-gradient(90deg,#0ea59a,#007a75);
+    color: #fff;
+}
+
+.weather-table th,
+.weather-table td {
+    padding: 12px 14px;
+    border: 1px solid #e6eef0;
+    vertical-align: middle;
+    font-size: 0.95rem;
+}
+
+.weather-table tbody tr:nth-child(even) {
+    background: #fbfdfe;
+}
+
+.weather-table tbody tr:hover {
+    background: #f1fbfa;
+}
+
+/* ID column smaller */
+.weather-table td:first-child { width: 70px; text-align: center; font-weight: 600; color:#1f6b67; }
+
+/* Actions - boutons stylés */
+.table-actions { display:flex; gap:8px; align-items:center; justify-content:flex-start; }
+
+.btn-weather {
+    display:inline-block;
+    padding:6px 10px;
+    border-radius:6px;
+    font-size:0.85rem;
+    font-weight:600;
+    text-decoration:none;
+    transition:all .12s ease;
+    border:1px solid transparent;
+    color:#fff;
+}
+
+.btn-weather-info  { background:#17a2b8; border-color:#1492a0; }
+.btn-weather-info:hover  { background:#1091a1; transform:translateY(-1px); }
+
+.btn-weather-edit  { background:#6c757d; border-color:#5b6469; }
+.btn-weather-edit:hover  { background:#585f63; transform:translateY(-1px); }
+
+.btn-weather-delete{ background:#dc3545; border-color:#c2293b; }
+.btn-weather-delete:hover{ background:#b21f32; transform:translateY(-1px); }
+
+/* petites variantes */
+.btn-weather-sm { padding:4px 8px; border-radius:5px; font-size:0.8rem; }
+
+/* responsive */
+@media (max-width: 768px) {
+    .weather-table th, .weather-table td { padding:10px 8px; font-size:0.88rem; }
+    .table-actions { gap:6px; }
+}
